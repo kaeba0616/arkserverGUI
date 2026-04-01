@@ -1,0 +1,11 @@
+ark-data/
+backups/
+scripts/rcon-cli
+.env
+*.tar.gz
+.claude/
+
+# Dashboard
+dashboard/node_modules/
+dashboard/.next/
+dashboard/data/
