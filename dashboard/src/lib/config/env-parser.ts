@@ -1,7 +1,4 @@
 import fs from "fs";
-import path from "path";
-
-const ENV_PATH = path.join(process.env.ARK_PROJECT_DIR || "/home/hidi/dev/arkSurv", ".env");
 
 interface EnvEntry {
   type: "comment" | "empty" | "value";
@@ -23,9 +20,9 @@ function parseEnvFile(content: string): EnvEntry[] {
   });
 }
 
-export function readEnv(): Record<string, string> {
-  if (!fs.existsSync(ENV_PATH)) return {};
-  const content = fs.readFileSync(ENV_PATH, "utf-8");
+export function readEnv(filePath: string): Record<string, string> {
+  if (!fs.existsSync(filePath)) return {};
+  const content = fs.readFileSync(filePath, "utf-8");
   const entries = parseEnvFile(content);
   const result: Record<string, string> = {};
   for (const entry of entries) {
@@ -36,8 +33,8 @@ export function readEnv(): Record<string, string> {
   return result;
 }
 
-export function writeEnv(updates: Record<string, string>): void {
-  const content = fs.existsSync(ENV_PATH) ? fs.readFileSync(ENV_PATH, "utf-8") : "";
+export function writeEnv(filePath: string, updates: Record<string, string>): void {
+  const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf-8") : "";
   const entries = parseEnvFile(content);
   const updatedKeys = new Set<string>();
 
@@ -49,12 +46,11 @@ export function writeEnv(updates: Record<string, string>): void {
     return entry.raw;
   });
 
-  // Add new keys not in original file
   for (const [key, value] of Object.entries(updates)) {
     if (!updatedKeys.has(key)) {
       lines.push(`${key}=${value}`);
     }
   }
 
-  fs.writeFileSync(ENV_PATH, lines.join("\n"));
+  fs.writeFileSync(filePath, lines.join("\n"));
 }

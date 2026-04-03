@@ -1,14 +1,21 @@
+import { NextRequest } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { getContainerLogStream } from "@/lib/docker";
+import { getServerContext, isError } from "@/lib/api-server-context";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const ctx = getServerContext(req);
+  if (isError(ctx)) return ctx;
+
+  const { server } = ctx;
+
   try {
-    const logStream = getContainerLogStream(200);
+    const logStream = getContainerLogStream(server.container_name, 200);
 
     const encoder = new TextEncoder();
     const readable = new ReadableStream({
@@ -16,7 +23,6 @@ export async function GET() {
         logStream.on("data", (chunk: Buffer) => {
           const lines = chunk.toString().split("\n").filter(Boolean);
           for (const line of lines) {
-            // Docker log stream has 8-byte header per line, skip it
             const clean = line.length > 8 ? line.slice(8) : line;
             controller.enqueue(encoder.encode(`data: ${JSON.stringify(clean)}\n\n`));
           }

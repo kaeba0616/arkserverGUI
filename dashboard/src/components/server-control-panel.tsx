@@ -3,17 +3,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useServerContext } from "@/hooks/use-server-context";
 
 interface Props {
   serverState: string;
+  hasUpdateCommand: boolean;
   onAction: () => void;
 }
 
-export function ServerControlPanel({ serverState, onAction }: Props) {
+export function ServerControlPanel({ serverState, hasUpdateCommand, onAction }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
+  const { serverId } = useServerContext();
 
   const handleAction = async (action: string) => {
-    if (loading) return;
+    if (loading || !serverId) return;
 
     const confirmMessages: Record<string, string> = {
       stop: "서버를 종료하시겠습니까? 30초 경고 후 종료됩니다.",
@@ -27,7 +30,7 @@ export function ServerControlPanel({ serverState, onAction }: Props) {
 
     setLoading(action);
     try {
-      const res = await fetch("/api/server/control", {
+      const res = await fetch(`/api/server/control?serverId=${serverId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
@@ -75,14 +78,16 @@ export function ServerControlPanel({ serverState, onAction }: Props) {
         >
           {loading === "restart" ? "재시작 중..." : "재시작"}
         </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => handleAction("update")}
-          disabled={!isRunning || !!loading}
-        >
-          {loading === "update" ? "업데이트 중..." : "업데이트"}
-        </Button>
+        {hasUpdateCommand && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => handleAction("update")}
+            disabled={!isRunning || !!loading}
+          >
+            {loading === "update" ? "업데이트 중..." : "업데이트"}
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

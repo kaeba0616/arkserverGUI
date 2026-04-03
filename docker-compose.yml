@@ -1,52 +1,17 @@
 services:
   ark-dashboard:
     build: ./dashboard
-    container_name: ark-dashboard
+    container_name: game-dashboard
     restart: unless-stopped
     ports:
       - "3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    user: "0:0"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./.env:/app/server-config/.env:ro
-      - ./ark-config:/app/server-config/ark-config
-      - ./backups:/app/server-config/backups
-      - ./dashboard/data:/app/data
+      - ./data:/app/data
     environment:
       - DASHBOARD_PASSWORD_HASH=${DASHBOARD_PASSWORD_HASH}
-      - ARK_CONTAINER_NAME=ark-server
-      - ARK_PROJECT_DIR=/app/server-config
-      - RCON_HOST=host.docker.internal
-      - RCON_PORT=${RCON_PORT}
-      - RCON_PASSWORD=${RCON_PASSWORD}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - DATA_DIR=/app/data
-    depends_on:
-      - ark-server
-
-  ark-server:
-    image: hermsi/ark-server:latest
-    container_name: ark-server
-    restart: unless-stopped
-    environment:
-      - SESSION_NAME=${SESSION_NAME}
-      - SERVER_MAP=${SERVER_MAP}
-      - SERVER_PASSWORD=${SERVER_PASSWORD}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - MAX_PLAYERS=${MAX_PLAYERS}
-      - UPDATE_ON_START=${UPDATE_ON_START}
-      - BACKUP_ON_STOP=${BACKUP_ON_STOP}
-      - WARN_ON_STOP=${WARN_ON_STOP}
-      - ARK_MODS=${ARK_MODS}
-      - GAME_MOD_IDS=${GAME_MOD_IDS}
-    network_mode: host
-    volumes:
-      - ./ark-data:/ark
-      - ./ark-config/GameUserSettings.ini:/ark/server/ShooterGame/Saved/Config/LinuxServer/GameUserSettings.ini
-      - ./ark-config/Game.ini:/ark/server/ShooterGame/Saved/Config/LinuxServer/Game.ini
-    mem_limit: 8g
-    memswap_limit: 10g
-    cpus: 6
-    tty: true
-    stdin_open: true

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useServerContext } from "@/hooks/use-server-context";
 import type { AlertRule } from "@/types/alert";
 
 const METRICS = [
@@ -32,11 +33,12 @@ export function AlertConfig({ rules, events, onRefresh }: Props) {
   const [operator, setOperator] = useState("gt");
   const [threshold, setThreshold] = useState("");
   const [saving, setSaving] = useState(false);
+  const { serverId } = useServerContext();
 
   const addRule = async () => {
     if (!threshold) return;
     setSaving(true);
-    await fetch("/api/alerts", {
+    await fetch(`/api/alerts?serverId=${serverId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ metric, operator, threshold: parseFloat(threshold), enabled: true }),
@@ -47,7 +49,7 @@ export function AlertConfig({ rules, events, onRefresh }: Props) {
   };
 
   const deleteRule = async (id: number) => {
-    await fetch("/api/alerts", {
+    await fetch(`/api/alerts?serverId=${serverId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
@@ -56,7 +58,7 @@ export function AlertConfig({ rules, events, onRefresh }: Props) {
   };
 
   const acknowledgeAll = async () => {
-    await fetch("/api/alerts", {
+    await fetch(`/api/alerts?serverId=${serverId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "acknowledge" }),

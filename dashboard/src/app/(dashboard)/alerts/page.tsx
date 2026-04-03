@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { AlertConfig } from "@/components/alert-config";
+import { useServerContext } from "@/hooks/use-server-context";
 
 export default function AlertsPage() {
   const [data, setData] = useState<{ rules: []; events: [] }>({ rules: [], events: [] });
+  const { serverId } = useServerContext();
 
   const loadData = () => {
-    fetch("/api/alerts").then((r) => r.json()).then(setData);
+    if (!serverId) return;
+    fetch(`/api/alerts?serverId=${serverId}`).then((r) => r.json()).then(setData);
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [serverId]);
 
   return (
     <div className="space-y-6">

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/api-auth";
 import { getDb } from "@/lib/db";
+import { getServerContext, isError } from "@/lib/api-server-context";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const authError = await requireAuth();
   if (authError) return authError;
+
+  const ctx = getServerContext(req);
+  if (isError(ctx)) return ctx;
 
   const range = req.nextUrl.searchParams.get("range") || "1h";
 
@@ -22,8 +26,8 @@ export async function GET(req: NextRequest) {
 
   const db = getDb();
   const rows = db
-    .prepare("SELECT * FROM metrics WHERE timestamp > ? ORDER BY timestamp ASC")
-    .all(since) as {
+    .prepare("SELECT * FROM metrics WHERE server_id = ? AND timestamp > ? ORDER BY timestamp ASC")
+    .all(ctx.serverId, since) as {
     timestamp: number;
     cpu_percent: number;
     mem_usage_mb: number;

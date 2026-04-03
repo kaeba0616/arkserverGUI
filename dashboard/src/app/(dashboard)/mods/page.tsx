@@ -2,23 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { ModManager } from "@/components/mod-manager";
+import { useServerContext } from "@/hooks/use-server-context";
 
 export default function ModsPage() {
   const [mods, setMods] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const { serverId } = useServerContext();
 
   useEffect(() => {
-    fetch("/api/settings/env")
+    if (!serverId) return;
+    fetch(`/api/settings/env?serverId=${serverId}`)
       .then((r) => r.json())
       .then((data) => {
         const modStr = data.ARK_MODS || "";
         setMods(modStr ? modStr.split(",").map((m: string) => m.trim()).filter(Boolean) : []);
         setLoading(false);
       });
-  }, []);
+  }, [serverId]);
 
   const saveMods = async (newMods: string[]) => {
-    const res = await fetch("/api/settings/env", {
+    const res = await fetch(`/api/settings/env?serverId=${serverId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

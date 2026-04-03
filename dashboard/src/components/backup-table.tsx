@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useServerContext } from "@/hooks/use-server-context";
 import type { BackupInfo } from "@/types/backup";
 
 function formatSize(bytes: number): string {
@@ -19,10 +20,11 @@ interface Props {
 
 export function BackupTable({ backups, onRefresh }: Props) {
   const [loading, setLoading] = useState<string | null>(null);
+  const { serverId } = useServerContext();
 
   const createBackup = async () => {
     setLoading("create");
-    const res = await fetch("/api/backups", { method: "POST" });
+    const res = await fetch(`/api/backups?serverId=${serverId}`, { method: "POST" });
     const data = await res.json();
     alert(data.message || data.error);
     setLoading(null);
@@ -32,7 +34,7 @@ export function BackupTable({ backups, onRefresh }: Props) {
   const restoreBackup = async (filename: string) => {
     if (!window.confirm(`"${filename}"을(를) 복원하시겠습니까?\n서버가 중지됩니다.`)) return;
     setLoading(filename);
-    const res = await fetch("/api/backups/restore", {
+    const res = await fetch(`/api/backups/restore?serverId=${serverId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),
@@ -46,7 +48,7 @@ export function BackupTable({ backups, onRefresh }: Props) {
   const deleteBackup = async (filename: string) => {
     if (!window.confirm(`"${filename}"을(를) 삭제하시겠습니까?`)) return;
     setLoading(filename);
-    const res = await fetch("/api/backups", {
+    const res = await fetch(`/api/backups?serverId=${serverId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename }),

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useServerContext } from "@/hooks/use-server-context";
 
 interface LogEntry {
   type: "command" | "response" | "error";
@@ -26,6 +27,7 @@ export function RconTerminal() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { serverId } = useServerContext();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -41,7 +43,7 @@ export function RconTerminal() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/rcon", {
+      const res = await fetch(`/api/rcon?serverId=${serverId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ command: cmd }),

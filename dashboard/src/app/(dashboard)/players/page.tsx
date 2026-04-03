@@ -29,15 +29,15 @@ export default function PlayersPage() {
                 <tr className="border-b text-left text-muted-foreground">
                   <th className="pb-2 font-medium">#</th>
                   <th className="pb-2 font-medium">이름</th>
-                  <th className="pb-2 font-medium">Steam ID</th>
+                  <th className="pb-2 font-medium">ID</th>
                 </tr>
               </thead>
               <tbody>
                 {players.map((player) => (
-                  <tr key={player.steamId} className="border-b last:border-0">
+                  <tr key={player.id} className="border-b last:border-0">
                     <td className="py-2">{player.index}</td>
                     <td className="py-2 font-medium">{player.name}</td>
-                    <td className="py-2 text-muted-foreground">{player.steamId}</td>
+                    <td className="py-2 text-muted-foreground">{player.id}</td>
                   </tr>
                 ))}
               </tbody>

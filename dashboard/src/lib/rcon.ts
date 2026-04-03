@@ -1,14 +1,15 @@
 import { Rcon } from "rcon-client";
-import type { PlayerInfo } from "@/types/server";
+import type { PlayerInfo } from "@/lib/adapters/types";
+import type { GameAdapter } from "@/lib/adapters/types";
 
-const RCON_CONFIG = {
-  host: process.env.RCON_HOST || "127.0.0.1",
-  port: parseInt(process.env.RCON_PORT || "27020"),
-  password: process.env.RCON_PASSWORD || process.env.ADMIN_PASSWORD || "",
-};
+export interface RconConfig {
+  host: string;
+  port: number;
+  password: string;
+}
 
-async function withRcon<T>(fn: (rcon: Rcon) => Promise<T>): Promise<T> {
-  const rcon = await Rcon.connect(RCON_CONFIG);
+async function withRcon<T>(config: RconConfig, fn: (rcon: Rcon) => Promise<T>): Promise<T> {
+  const rcon = await Rcon.connect(config);
   try {
     return await fn(rcon);
   } finally {
@@ -16,45 +17,29 @@ async function withRcon<T>(fn: (rcon: Rcon) => Promise<T>): Promise<T> {
   }
 }
 
-export async function sendCommand(command: string): Promise<string> {
-  return withRcon(async (rcon) => {
+export async function sendCommand(config: RconConfig, command: string): Promise<string> {
+  return withRcon(config, async (rcon) => {
     const response = await rcon.send(command);
     return response;
   });
 }
 
-export async function getPlayers(): Promise<PlayerInfo[]> {
+export async function getPlayers(config: RconConfig, adapter: GameAdapter): Promise<PlayerInfo[]> {
   try {
-    const response = await sendCommand("listplayers");
-    if (!response || response.includes("No Players")) {
-      return [];
-    }
-
-    const players: PlayerInfo[] = [];
-    const lines = response.split("\n").filter((l) => l.trim());
-
-    for (const line of lines) {
-      // Format: "0. PlayerName, 76561198012345678"
-      const match = line.match(/^(\d+)\.\s+(.+?),\s+(\d+)/);
-      if (match) {
-        players.push({
-          index: parseInt(match[1]),
-          name: match[2],
-          steamId: match[3],
-        });
-      }
-    }
-
-    return players;
+    const response = await sendCommand(config, adapter.listPlayersCommand);
+    return adapter.parsePlayers(response);
   } catch {
     return [];
   }
 }
 
-export async function saveWorld(): Promise<string> {
-  return sendCommand("saveworld");
+export async function saveWorld(config: RconConfig, adapter: GameAdapter): Promise<string | null> {
+  if (!adapter.saveCommand) return null;
+  return sendCommand(config, adapter.saveCommand);
 }
 
-export async function broadcast(message: string): Promise<string> {
-  return sendCommand(`broadcast ${message}`);
+export async function broadcast(config: RconConfig, adapter: GameAdapter, message: string): Promise<string | null> {
+  if (!adapter.broadcastCommand) return null;
+  const command = adapter.broadcastCommand.replace("{message}", message);
+  return sendCommand(config, command);
 }

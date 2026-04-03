@@ -18,11 +18,11 @@ export function PlayerTable({ players }: { players: PlayerInfo[] }) {
           <div className="space-y-2">
             {players.map((player) => (
               <div
-                key={player.steamId}
+                key={player.id}
                 className="flex items-center justify-between rounded-md border p-2 text-sm"
               >
                 <span className="font-medium">{player.name}</span>
-                <span className="text-xs text-muted-foreground">{player.steamId}</span>
+                <span className="text-xs text-muted-foreground">{player.id}</span>
               </div>
             ))}
           </div>

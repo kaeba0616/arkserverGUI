@@ -1,18 +1,22 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useServerContext } from "./use-server-context";
 
 export function useLogStream() {
   const [logs, setLogs] = useState<string[]>([]);
   const [connected, setConnected] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const { serverId } = useServerContext();
 
   const connect = useCallback(() => {
+    if (!serverId) return;
+
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
     }
 
-    const es = new EventSource("/api/logs/stream");
+    const es = new EventSource(`/api/logs/stream?serverId=${serverId}`);
     eventSourceRef.current = es;
 
     es.onopen = () => setConnected(true);
@@ -32,10 +36,9 @@ export function useLogStream() {
     es.onerror = () => {
       setConnected(false);
       es.close();
-      // Reconnect after 3 seconds
       setTimeout(connect, 3000);
     };
-  }, []);
+  }, [serverId]);
 
   const disconnect = useCallback(() => {
     if (eventSourceRef.current) {
@@ -47,13 +50,14 @@ export function useLogStream() {
 
   const clearLogs = useCallback(() => setLogs([]), []);
 
+  // Reconnect when serverId changes
   useEffect(() => {
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
     };
-  }, []);
+  }, [serverId]);
 
   return { logs, connected, connect, disconnect, clearLogs };
 }

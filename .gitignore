@@ -1,9 +1,12 @@
 ark-data/
-backups/
+/backups/
 scripts/rcon-cli
 .env
+.env.*
+!.env.example
 *.tar.gz
 .claude/
+data/
 
 # Dashboard
 dashboard/node_modules/

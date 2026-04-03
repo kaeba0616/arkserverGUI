@@ -1,6 +1,7 @@
 "use client";
 
 import useSWR from "swr";
+import { useServerApiUrl } from "./use-server-context";
 
 interface MetricPoint {
   timestamp: number;
@@ -13,8 +14,10 @@ interface MetricPoint {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export function useMetrics(range: string = "1h") {
+  const url = useServerApiUrl("/api/metrics", { range });
+
   const { data, error, isLoading } = useSWR<MetricPoint[]>(
-    `/api/metrics?range=${range}`,
+    url,
     fetcher,
     { refreshInterval: 30000 }
   );

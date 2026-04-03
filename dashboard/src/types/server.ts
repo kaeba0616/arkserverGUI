@@ -1,6 +1,6 @@
 export interface ServerStatus {
   state: "running" | "stopped" | "restarting" | "paused" | "unknown";
-  uptime: number | null; // seconds
+  uptime: number | null;
   startedAt: string | null;
 }
 
@@ -11,9 +11,9 @@ export interface ContainerStats {
 }
 
 export interface PlayerInfo {
-  index: number;
+  index?: number;
   name: string;
-  steamId: string;
+  id: string;
 }
 
 export interface ServerOverview {
@@ -21,4 +21,14 @@ export interface ServerOverview {
   stats: ContainerStats | null;
   players: PlayerInfo[];
   playerCount: number;
+}
+
+export interface ServerInstance {
+  id: string;
+  name: string;
+  gameId: string;
+  containerName: string;
+  status?: ServerStatus;
+  stats?: ContainerStats | null;
+  playerCount?: number;
 }

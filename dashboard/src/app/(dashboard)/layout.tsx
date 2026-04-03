@@ -1,5 +1,6 @@
 import { AuthGuard } from "@/components/auth-guard";
 import { Sidebar } from "@/components/sidebar";
+import { ServerProvider } from "@/hooks/use-server-context";
 
 export default function DashboardLayout({
   children,
@@ -8,10 +9,12 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="flex h-screen">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
-      </div>
+      <ServerProvider>
+        <div className="flex h-screen">
+          <Sidebar />
+          <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        </div>
+      </ServerProvider>
     </AuthGuard>
   );
 }
