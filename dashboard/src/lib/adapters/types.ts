@@ -61,4 +61,11 @@ export interface GameAdapter {
   updateCommand: string[] | null;
 
   extraNavItems: { href: string; label: string }[];
+
+  quickCommands: { label: string; cmd: string }[];
+
+  rconEnvKeys: {
+    password: string;
+    enable?: string;
+  };
 }

@@ -5,6 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useServerContext } from "@/hooks/use-server-context";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const BASE_NAV_ITEMS = [
   { href: "/", label: "대시보드", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" },
@@ -47,11 +50,17 @@ export function Sidebar() {
   const router = useRouter();
   const { serverId, servers, setServerId } = useServerContext();
 
-  // Get extra nav items for current game from server info
-  const currentServer = servers.find((s) => s.id === serverId);
-  const extraNavItems = getExtraNavItems(currentServer?.gameId || "");
+  const { data: serverInfo } = useSWR(
+    serverId ? `/api/servers/${serverId}` : null,
+    fetcher
+  );
 
-  const allNavItems = [...BASE_NAV_ITEMS, ...extraNavItems];
+  const adapterExtraNav = (serverInfo?.adapter?.extraNavItems || []).map((item: { href: string; label: string }) => ({
+    ...item,
+    icon: EXTRA_NAV_ICONS[item.href] || "M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33",
+  }));
+
+  const allNavItems = [...BASE_NAV_ITEMS, ...adapterExtraNav];
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -136,14 +145,3 @@ export function Sidebar() {
   );
 }
 
-function getExtraNavItems(gameId: string) {
-  // Map known game adapter extra nav items
-  const extras: Record<string, { href: string; label: string }[]> = {
-    ark: [{ href: "/mods", label: "모드" }],
-  };
-
-  return (extras[gameId] || []).map((item) => ({
-    ...item,
-    icon: EXTRA_NAV_ICONS[item.href] || "M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33",
-  }));
-}

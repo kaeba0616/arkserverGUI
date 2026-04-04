@@ -33,7 +33,7 @@ export function isError(ctx: ServerContext | NextResponse): ctx is NextResponse 
 export function getRconConfig(server: ServerRecord) {
   return {
     host: server.rcon_host || "127.0.0.1",
-    port: server.rcon_port || 27020,
+    port: server.rcon_port || 0,
     password: server.rcon_password || "",
   };
 }

@@ -78,4 +78,15 @@ export const arkAdapter: GameAdapter = {
   extraNavItems: [
     { href: "/mods", label: "모드" },
   ],
+
+  quickCommands: [
+    { label: "월드 저장", cmd: "saveworld" },
+    { label: "접속자", cmd: "listplayers" },
+    { label: "야생공룡 리스폰", cmd: "destroywilddinos" },
+    { label: "시간 변경 (낮)", cmd: "settimeofday 12:00" },
+  ],
+
+  rconEnvKeys: {
+    password: "ADMIN_PASSWORD",
+  },
 };

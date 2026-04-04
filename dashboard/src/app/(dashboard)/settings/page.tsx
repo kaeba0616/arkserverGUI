@@ -81,7 +81,7 @@ export default function SettingsPage() {
           ))}
         </TabsList>
         <TabsContent value="env" className="mt-4">
-          <EnvSettingsForm data={envData} onSave={saveEnv} />
+          <EnvSettingsForm data={envData} settingsFields={serverInfo?.adapter?.settingsFields} onSave={saveEnv} />
         </TabsContent>
         {configFiles.map((cf: { name: string }, i: number) => (
           <TabsContent key={i} value={`config-${i}`} className="mt-4">

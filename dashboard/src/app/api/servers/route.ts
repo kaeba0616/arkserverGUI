@@ -98,17 +98,11 @@ export async function POST(req: NextRequest) {
     ...envOverrides,
   };
 
-  // Set RCON password in env if provided
-  if (rconPassword) {
-    env.RCON_PASSWORD = rconPassword;
-    // For ARK
-    if (gameId === "ark") {
-      env.ADMIN_PASSWORD = rconPassword;
-    }
-    // For Minecraft
-    if (gameId === "minecraft") {
-      env.RCON_PASSWORD = rconPassword;
-      env.ENABLE_RCON = "true";
+  // Set RCON env vars using adapter's rconEnvKeys
+  if (rconPassword && adapter.rcon.supported) {
+    env[adapter.rconEnvKeys.password] = rconPassword;
+    if (adapter.rconEnvKeys.enable) {
+      env[adapter.rconEnvKeys.enable] = "true";
     }
   }
 

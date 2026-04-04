@@ -35,7 +35,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-background">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">ARK Server Manager</CardTitle>
+          <CardTitle className="text-2xl">Game Server Manager</CardTitle>
           <p className="text-sm text-muted-foreground">
             관리자 비밀번호를 입력하세요
           </p>

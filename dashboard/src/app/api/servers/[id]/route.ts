@@ -31,6 +31,7 @@ export async function GET(
       settingsFields: adapter.settingsFields,
       configFiles: adapter.configFiles,
       extraNavItems: adapter.extraNavItems,
+      quickCommands: adapter.quickCommands,
       rcon: adapter.rcon,
       updateCommand: adapter.updateCommand,
     },

@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "ARK Server Manager",
-  description: "ARK: Survival Evolved 서버 관리 대시보드",
+  title: "Game Server Manager",
+  description: "멀티 게임 서버 관리 대시보드",
 };
 
 export default function RootLayout({

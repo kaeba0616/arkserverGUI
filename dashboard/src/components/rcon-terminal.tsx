@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useServerContext } from "@/hooks/use-server-context";
+import useSWR from "swr";
 
 interface LogEntry {
   type: "command" | "response" | "error";
@@ -12,12 +13,7 @@ interface LogEntry {
   timestamp: Date;
 }
 
-const QUICK_COMMANDS = [
-  { label: "월드 저장", cmd: "saveworld" },
-  { label: "접속자", cmd: "listplayers" },
-  { label: "야생공룡 리스폰", cmd: "destroywilddinos" },
-  { label: "시간 변경 (낮)", cmd: "settimeofday 12:00" },
-];
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export function RconTerminal() {
   const [command, setCommand] = useState("");
@@ -29,12 +25,19 @@ export function RconTerminal() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { serverId } = useServerContext();
 
+  const { data: serverInfo } = useSWR(
+    serverId ? `/api/servers/${serverId}` : null,
+    fetcher
+  );
+
+  const quickCommands: { label: string; cmd: string }[] = serverInfo?.adapter?.quickCommands || [];
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);
 
   const executeCommand = async (cmd: string) => {
-    if (!cmd.trim() || loading) return;
+    if (!cmd.trim() || loading || !serverId) return;
 
     setHistory((prev) => [cmd, ...prev.slice(0, 49)]);
     setHistoryIndex(-1);
@@ -85,13 +88,15 @@ export function RconTerminal() {
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
-        {QUICK_COMMANDS.map((qc) => (
-          <Button key={qc.cmd} size="sm" variant="outline" onClick={() => executeCommand(qc.cmd)} disabled={loading}>
-            {qc.label}
-          </Button>
-        ))}
-      </div>
+      {quickCommands.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {quickCommands.map((qc) => (
+            <Button key={qc.cmd} size="sm" variant="outline" onClick={() => executeCommand(qc.cmd)} disabled={loading}>
+              {qc.label}
+            </Button>
+          ))}
+        </div>
+      )}
 
       <ScrollArea className="flex-1 rounded-md border bg-black/50 p-4 font-mono text-sm">
         <div className="space-y-1">

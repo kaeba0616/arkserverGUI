@@ -76,4 +76,16 @@ export const minecraftAdapter: GameAdapter = {
   updateCommand: null,
 
   extraNavItems: [],
+
+  quickCommands: [
+    { label: "월드 저장", cmd: "save-all" },
+    { label: "접속자", cmd: "list" },
+    { label: "난이도 변경", cmd: "difficulty normal" },
+    { label: "날씨 맑음", cmd: "weather clear" },
+  ],
+
+  rconEnvKeys: {
+    password: "RCON_PASSWORD",
+    enable: "ENABLE_RCON",
+  },
 };
