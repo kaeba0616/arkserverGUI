@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
 
   const containerName = `game-${id}`;
   const dataDir = path.join(process.env.DATA_DIR || path.join(process.cwd(), "data"), "servers", id);
+  // HOST_DATA_DIR is the host-side path for Docker volume mounts (needed when dashboard runs in Docker)
+  const hostDataDir = path.join(process.env.HOST_DATA_DIR || dataDir, "servers", id);
 
   // Check if container already exists
   if (await containerExists(containerName)) {
@@ -99,12 +101,18 @@ export async function POST(req: NextRequest) {
   };
 
   // Set RCON env vars using adapter's rconEnvKeys
-  if (rconPassword && adapter.rcon.supported) {
-    env[adapter.rconEnvKeys.password] = rconPassword;
+  if (adapter.rcon.supported) {
+    // Always enable RCON if adapter supports it
     if (adapter.rconEnvKeys.enable) {
       env[adapter.rconEnvKeys.enable] = "true";
     }
+    if (rconPassword) {
+      env[adapter.rconEnvKeys.password] = rconPassword;
+    }
   }
+
+  // Auto-detect rcon_host: use host.docker.internal when dashboard runs in Docker
+  const rconHost = process.env.RCON_HOST || "host.docker.internal";
 
   try {
     // Create server record in DB
@@ -113,7 +121,7 @@ export async function POST(req: NextRequest) {
       name,
       game_id: gameId,
       container_name: containerName,
-      rcon_host: "127.0.0.1",
+      rcon_host: rconHost,
       rcon_port: rconPort,
       rcon_password: rconPassword,
       data_dir: dataDir,
@@ -129,7 +137,7 @@ export async function POST(req: NextRequest) {
     }));
 
     const dockerVolumes = adapter.docker.volumes.map((v) => ({
-      host: path.join(dataDir, v.hostRelative),
+      host: path.join(hostDataDir, v.hostRelative),
       container: v.container,
       readonly: v.readonly,
     }));

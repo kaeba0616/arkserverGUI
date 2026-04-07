@@ -15,3 +15,4 @@ services:
       - DASHBOARD_PASSWORD_HASH=${DASHBOARD_PASSWORD_HASH}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - DATA_DIR=/app/data
+      - HOST_DATA_DIR=${PWD}/data

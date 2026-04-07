@@ -1,4 +1,4 @@
-import { execSync, spawn } from "child_process";
+import { execSync, execFileSync, spawn } from "child_process";
 import { PassThrough } from "stream";
 import type { ServerStatus, ContainerStats } from "@/types/server";
 
@@ -125,7 +125,7 @@ export async function createContainer(opts: {
 
   args.push(opts.image);
 
-  exec(args.join(" "));
+  execFileSync(args[0], args.slice(1), { timeout: 60000, encoding: "utf-8" });
 }
 
 export async function removeContainer(containerName: string): Promise<void> {
