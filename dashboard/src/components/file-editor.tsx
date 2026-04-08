@@ -15,6 +15,7 @@ export function FileEditor({ filePath, content: initialContent, onClose, onSaved
   const [content, setContent] = useState(initialContent);
   const [saving, setSaving] = useState(false);
   const [modified, setModified] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { serverId } = useServerContext();
 
   const handleChange = (value: string) => {
