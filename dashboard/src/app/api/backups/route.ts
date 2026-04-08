@@ -85,7 +85,11 @@ export async function DELETE(req: NextRequest) {
   if (isError(ctx)) return ctx;
 
   const backupDir = path.join(ctx.server.data_dir, "backups");
-  const { filename } = await req.json();
+  let delBody;
+  try { delBody = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+  const { filename } = delBody;
 
   if (!filename || !filename.endsWith(".tar.gz")) {
     return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
