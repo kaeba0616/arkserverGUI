@@ -33,15 +33,18 @@ export function FileManager() {
   const loadDirectory = useCallback(async (dirPath: string) => {
     if (!serverId) return;
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch(`/api/files?serverId=${serverId}&path=${encodeURIComponent(dirPath)}`);
       const data = await res.json();
       if (res.ok) {
         setEntries(data.entries || []);
         setCurrentPath(dirPath);
+      } else {
+        setError(data.error || "디렉토리를 불러올 수 없습니다.");
       }
     } catch {
-      // ignore
+      setError("서버 통신 오류");
     } finally {
       setLoading(false);
     }
