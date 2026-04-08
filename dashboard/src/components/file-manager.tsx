@@ -80,7 +80,7 @@ export function FileManager() {
       }
       setEditingFile({ path: filePath, content: data.content });
     } catch {
-      alert("통신 오류");
+      setError("통신 오류");
     }
   };
 
@@ -117,7 +117,7 @@ export function FileManager() {
         alert(data.error || "폴더 생성 실패");
       }
     } catch {
-      alert("통신 오류");
+      setError("통신 오류");
     }
   };
 
