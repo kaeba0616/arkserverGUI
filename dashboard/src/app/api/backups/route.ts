@@ -4,7 +4,7 @@ import { getServerContext, isError, getRconConfig } from "@/lib/api-server-conte
 import { sendCommand } from "@/lib/rcon";
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import type { BackupInfo } from "@/types/backup";
 
 export const dynamic = "force-dynamic";
