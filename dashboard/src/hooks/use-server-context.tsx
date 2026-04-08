@@ -2,8 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 import useSWR from "swr";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+import { fetcher } from "@/lib/fetcher";
 
 interface ServerInfo {
   id: string;
