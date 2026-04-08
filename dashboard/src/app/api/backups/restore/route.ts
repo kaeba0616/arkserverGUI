@@ -4,7 +4,7 @@ import { getServerContext, isError } from "@/lib/api-server-context";
 import { stopContainer } from "@/lib/docker";
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 
 export async function POST(req: NextRequest) {
   const authError = await requireAuth();
@@ -17,7 +17,14 @@ export async function POST(req: NextRequest) {
   const backupDir = path.join(server.data_dir, "backups");
   const saveDir = path.join(server.data_dir, adapter.savePathRelative);
 
-  const { filename } = await req.json();
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const { filename } = body;
   if (!filename || !filename.endsWith(".tar.gz")) {
     return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
   }
@@ -39,13 +46,13 @@ export async function POST(req: NextRequest) {
     const timestamp = new Date().toISOString().replace(/[-:T]/g, "").slice(0, 15).replace(/(\d{8})(\d{6})/, "$1_$2");
     const preRestoreName = `pre-restore-${timestamp}.tar.gz`;
     try {
-      execSync(`tar -czf "${path.join(backupDir, preRestoreName)}" -C "${saveDir}" .`, { timeout: 120000 });
+      execFileSync("tar", ["-czf", path.join(backupDir, preRestoreName), "-C", saveDir, "."], { timeout: 120000 });
     } catch {
       // Pre-restore backup is best-effort
     }
 
     // Restore
-    execSync(`tar -xzf "${backupPath}" -C "${saveDir}"`, { timeout: 120000 });
+    execFileSync("tar", ["-xzf", backupPath, "-C", saveDir], { timeout: 120000 });
 
     return NextResponse.json({
       success: true,
