@@ -55,6 +55,7 @@ export function FileEditor({ filePath, content: initialContent, onClose, onSaved
         <div className="flex items-center gap-2 text-sm">
           <span className="font-mono text-muted-foreground">{filePath}</span>
           {modified && <span className="text-yellow-500 text-xs">(수정됨)</span>}
+          {error && <span className="text-destructive text-xs ml-2">{error}</span>}
         </div>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={onClose}>닫기</Button>
