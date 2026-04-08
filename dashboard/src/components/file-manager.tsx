@@ -95,7 +95,7 @@ export function FileManager() {
       });
       loadDirectory(currentPath);
     } catch {
-      alert("삭제 실패");
+      setError("삭제 실패");
     }
   };
 
