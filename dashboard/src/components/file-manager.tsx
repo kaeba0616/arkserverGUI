@@ -114,7 +114,7 @@ export function FileManager() {
         loadDirectory(currentPath);
       } else {
         const data = await res.json();
-        alert(data.error || "폴더 생성 실패");
+        setError(data.error || "폴더 생성 실패");
       }
     } catch {
       setError("통신 오류");
