@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { useServerApiUrl } from "./use-server-context";
+import { fetcher } from "@/lib/fetcher";
 
 interface MetricPoint {
   timestamp: number;
@@ -10,8 +11,6 @@ interface MetricPoint {
   memLimitMb: number;
   playerCount: number;
 }
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export function useMetrics(range: string = "1h") {
   const url = useServerApiUrl("/api/metrics", { range });
