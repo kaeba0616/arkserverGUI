@@ -72,7 +72,11 @@ export async function DELETE(req: NextRequest) {
   const ctx = getServerContext(req);
   if (isError(ctx)) return ctx;
 
-  const { id } = await req.json();
+  let delBody;
+  try { delBody = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+  const { id } = delBody;
   if (!id) {
     return NextResponse.json({ error: "ID required" }, { status: 400 });
   }
