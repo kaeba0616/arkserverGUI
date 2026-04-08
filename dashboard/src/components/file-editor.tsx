@@ -25,6 +25,7 @@ export function FileEditor({ filePath, content: initialContent, onClose, onSaved
 
   const handleSave = async () => {
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch(`/api/files/write?serverId=${serverId}&path=${encodeURIComponent(filePath)}`, {
         method: "PUT",
@@ -36,10 +37,10 @@ export function FileEditor({ filePath, content: initialContent, onClose, onSaved
         setModified(false);
         onSaved();
       } else {
-        alert(data.error || "저장 실패");
+        setError(data.error || "저장 실패");
       }
     } catch {
-      alert("통신 오류");
+      setError("통신 오류");
     } finally {
       setSaving(false);
     }
