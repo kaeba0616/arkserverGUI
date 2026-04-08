@@ -17,21 +17,32 @@ export async function POST(req: NextRequest) {
   const ctx = getServerContext(req);
   if (isError(ctx)) return ctx;
 
-  const { oldPath, newPath } = await req.json();
-  if (!oldPath || !newPath) {
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  if (!body.oldPath || !body.newPath) {
     return NextResponse.json({ error: "oldPath and newPath required" }, { status: 400 });
   }
 
-  const fullOld = safePath(ctx.server.data_dir, oldPath);
-  const fullNew = safePath(ctx.server.data_dir, newPath);
+  const fullOld = safePath(ctx.server.data_dir, body.oldPath);
+  const fullNew = safePath(ctx.server.data_dir, body.newPath);
   if (!fullOld || !fullNew) {
     return NextResponse.json({ error: "Invalid path" }, { status: 400 });
   }
 
-  if (!fs.existsSync(fullOld)) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  try {
+    if (!fs.existsSync(fullOld)) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
-  fs.renameSync(fullOld, fullNew);
-  return NextResponse.json({ success: true });
+    fs.renameSync(fullOld, fullNew);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Rename failed";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }
