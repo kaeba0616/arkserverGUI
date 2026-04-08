@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
   const ctx = getServerContext(req);
   if (isError(ctx)) return ctx;
 
-  const body = await req.json();
+  let body;
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
 
   // Handle acknowledge actions
   if (body.action === "acknowledge") {
