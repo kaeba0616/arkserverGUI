@@ -27,6 +27,7 @@ export function FileManager() {
   const [editingFile, setEditingFile] = useState<{ path: string; content: string } | null>(null);
   const [newFolderName, setNewFolderName] = useState("");
   const [showNewFolder, setShowNewFolder] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { serverId } = useServerContext();
 
   const loadDirectory = useCallback(async (dirPath: string) => {
