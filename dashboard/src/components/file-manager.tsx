@@ -71,11 +71,11 @@ export function FileManager() {
       const res = await fetch(`/api/files/read?serverId=${serverId}&path=${encodeURIComponent(filePath)}`);
       const data = await res.json();
       if (!res.ok) {
-        alert(data.error || "파일을 열 수 없습니다.");
+        setError(data.error || "파일을 열 수 없습니다.");
         return;
       }
       if (!data.editable) {
-        alert(data.message || "편집할 수 없는 파일입니다.");
+        setError(data.message || "편집할 수 없는 파일입니다.");
         return;
       }
       setEditingFile({ path: filePath, content: data.content });
