@@ -41,7 +41,10 @@ export async function PUT(req: NextRequest) {
   const ctx = getServerContext(req);
   if (isError(ctx)) return ctx;
 
-  const body = await req.json();
+  let body;
+  try { body = await req.json(); } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
   const parsed = backupScheduleSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid schedule" }, { status: 400 });
