@@ -68,10 +68,7 @@ export async function POST(req: NextRequest) {
     const filename = `${adapter.backupPrefix}-${timestamp}.tar.gz`;
     const backupPath = path.join(backupDir, filename);
 
-    execSync(
-      `tar -czf "${backupPath}" -C "${saveDir}" . 2>/dev/null || true`,
-      { timeout: 120000 }
-    );
+    execFileSync("tar", ["-czf", backupPath, "-C", saveDir, "."], { timeout: 120000 });
 
     return NextResponse.json({ success: true, filename, message: "백업이 생성되었습니다." });
   } catch (error) {
