@@ -3,8 +3,7 @@
 import useSWR from "swr";
 import type { PlayerInfo } from "@/types/server";
 import { useServerApiUrl } from "./use-server-context";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+import { fetcher } from "@/lib/fetcher";
 
 export function usePlayers() {
   const url = useServerApiUrl("/api/players");
