@@ -27,17 +27,27 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Invalid path" }, { status: 400 });
   }
 
-  const { content } = await req.json();
-  if (typeof content !== "string") {
+  let body;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  if (typeof body.content !== "string") {
     return NextResponse.json({ error: "Content required" }, { status: 400 });
   }
 
-  // Ensure parent directory exists
-  const dir = path.dirname(fullPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+  try {
+    const dir = path.dirname(fullPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
 
-  fs.writeFileSync(fullPath, content);
-  return NextResponse.json({ success: true, message: "파일이 저장되었습니다." });
+    fs.writeFileSync(fullPath, body.content);
+    return NextResponse.json({ success: true, message: "파일이 저장되었습니다." });
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Failed to write file";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }
