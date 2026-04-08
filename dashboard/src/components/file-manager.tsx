@@ -172,6 +172,14 @@ export function FileManager() {
         </div>
       </div>
 
+      {/* Error */}
+      {error && (
+        <div className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+          <button className="ml-2 underline" onClick={() => setError(null)}>닫기</button>
+        </div>
+      )}
+
       {/* File List */}
       <div className="flex-1 overflow-auto rounded-md border">
         <table className="w-full text-sm">
