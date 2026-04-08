@@ -70,8 +70,7 @@ export async function restartContainer(containerName: string, timeout: number = 
 }
 
 export async function execInContainer(containerName: string, cmd: string[]): Promise<string> {
-  const cmdStr = cmd.map((c) => `'${c}'`).join(" ");
-  return exec(`docker exec ${containerName} ${cmdStr}`);
+  return execFileSync("docker", ["exec", containerName, ...cmd], { timeout: 30000, encoding: "utf-8" }).trim();
 }
 
 export function getContainerLogStream(containerName: string, tail: number = 200): NodeJS.ReadableStream {
