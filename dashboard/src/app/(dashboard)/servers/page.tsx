@@ -11,6 +11,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 const GAME_ICONS: Record<string, string> = {
   ark: "A",
+  dst: "D",
   minecraft: "M",
   valheim: "V",
   palworld: "P",

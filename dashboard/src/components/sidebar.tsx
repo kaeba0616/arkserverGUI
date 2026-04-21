@@ -28,6 +28,7 @@ const EXTRA_NAV_ICONS: Record<string, string> = {
 
 const GAME_ICONS: Record<string, string> = {
   ark: "A",
+  dst: "D",
   minecraft: "M",
   valheim: "V",
   palworld: "P",

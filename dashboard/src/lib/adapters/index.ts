@@ -1,9 +1,11 @@
 import { arkAdapter } from "./ark";
+import { dstAdapter } from "./dst";
 import { minecraftAdapter } from "./minecraft";
 import type { GameAdapter } from "./types";
 
 const adapters: Record<string, GameAdapter> = {
   ark: arkAdapter,
+  dst: dstAdapter,
   minecraft: minecraftAdapter,
 };
 

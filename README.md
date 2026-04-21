@@ -10,6 +10,7 @@ ARK: Survival Evolved, Minecraft 등 여러 게임 서버를 하나의 웹 UI에
 | 게임 | Docker 이미지 | 포트 |
 |------|---------------|------|
 | ARK: Survival Evolved | `hermsi/ark-server:latest` | 7777(UDP), 27015(UDP), 27020(TCP) |
+| Don't Starve Together | `jamesits/dst-server:latest` | 10999(UDP), 10998(UDP) |
 | Minecraft | `itzg/minecraft-server:latest` | 25565(TCP), 25575(TCP) |
 
 새 게임 추가: `dashboard/src/lib/adapters/`에 어댑터 파일 작성
@@ -73,7 +74,7 @@ DASHBOARD_PASSWORD_HASH=생성된해시값
 
 1. 대시보드 접속 → 사이드바 하단 **서버 관리** 클릭
 2. **새 서버 추가** 버튼 클릭
-3. 게임 선택 (ARK / Minecraft)
+3. 게임 선택 (ARK / Don't Starve Together / Minecraft)
 4. 서버 이름, ID, 비밀번호, 게임별 설정 입력
 5. **서버 생성** → Docker 컨테이너가 자동으로 생성됨
 6. 서버 목록에서 **시작** 버튼 클릭
@@ -83,6 +84,12 @@ DASHBOARD_PASSWORD_HASH=생성된해시값
 ### ARK: Survival Evolved
 - Steam 서버 브라우저에서 `서버IP:27015` 추가
 - 또는 게임 내 직접 접속 `서버IP:7777`
+
+### Don't Starve Together
+- 클러스터 토큰 필요: https://accounts.klei.com/account/game/servers?game=DontStarveTogether 에서 발급
+- 게임 내 서버 브라우저에서 서버 이름으로 검색
+- 또는 콘솔에서 `c_connect("서버IP", 10999)` 로 직접 접속
+- RCON 미지원 (웹 콘솔 사용 불가)
 
 ### Minecraft
 - Minecraft 클라이언트 → 멀티플레이 → 서버 추가 → `서버IP:25565`
@@ -120,6 +127,8 @@ DASHBOARD_PASSWORD_HASH=생성된해시값
 | 7777 | UDP | ARK 게임 접속 |
 | 27015 | UDP | ARK Steam 서버 조회 |
 | 27020 | TCP | ARK RCON |
+| 10999 | UDP | DST Master 서버 |
+| 10998 | UDP | DST Caves 서버 |
 | 25565 | TCP | Minecraft 게임 접속 |
 | 25575 | TCP | Minecraft RCON |
 
@@ -132,7 +141,7 @@ DASHBOARD_PASSWORD_HASH=생성된해시값
 │   │   ├── components/     # UI 컴포넌트
 │   │   ├── hooks/          # React 훅
 │   │   ├── lib/
-│   │   │   ├── adapters/   # 게임 어댑터 (ark, minecraft)
+│   │   │   ├── adapters/   # 게임 어댑터 (ark, dst, minecraft)
 │   │   │   ├── config/     # 설정 파서 (env, ini, properties)
 │   │   │   └── ...         # Docker, RCON, DB 등
 │   │   └── types/          # TypeScript 타입
